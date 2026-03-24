@@ -4,8 +4,8 @@
 
 Name: anime-games-launcher
 Summary: Universal games launcher powered by luau scripts with in-house APIs 
-Version: @@VERSION@@
-Release: @@RELEASE@@%{?dist}
+Version: 2.0.0
+Release: 1%{?dist}
 License: GPLv3+
 Group: Applications/System
 Source0: %{name}-%{version}.tar.gz
