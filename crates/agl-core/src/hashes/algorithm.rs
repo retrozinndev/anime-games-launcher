@@ -20,7 +20,7 @@ use std::str::FromStr;
 
 /// | Family  | Variant         | Bits | Name              |
 /// | ------- | --------------- | ---- | ----------------- |
-/// | crc     | crc16/arc       | 16   | `crc16/arc`       |
+/// | crc     | crc16/arc       | 16   | `crc16`           |
 /// | crc     | crc16/usb       | 16   | `crc16/usb`       |
 /// | crc     | crc32/iso-hdlc  | 32   | `crc32`           |
 /// | crc     | crc32/iscsi     | 32   | `crc32c`          |
