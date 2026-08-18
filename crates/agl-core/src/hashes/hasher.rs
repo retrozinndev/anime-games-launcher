@@ -23,14 +23,11 @@ use super::algorithm::HashAlgorithm;
 
 #[allow(non_camel_case_types)]
 pub enum Hasher {
+    #[cfg(feature = "hashes-crc")]
+    Crc { algorithm: HashAlgorithm, hasher: crc_fast::Digest },
+
     #[cfg(feature = "hashes-seahash")]
     Seahash(seahash::SeaHasher),
-
-    #[cfg(feature = "hashes-crc32")]
-    Crc32(crc32fast::Hasher),
-
-    #[cfg(feature = "hashes-crc32c")]
-    Crc32c(crc32c::Crc32cHasher),
 
     #[cfg(feature = "hashes-siphash")]
     Siphash_1_3_64(siphasher::sip::SipHasher13),
@@ -128,18 +125,93 @@ impl Hasher {
     pub fn new(algorithm: impl Into<HashAlgorithm>) -> Self {
         let algorithm: HashAlgorithm = algorithm.into();
 
-        #[cfg(feature = "tracing")]
-        tracing::trace!(?algorithm, "create hasher");
-
         match algorithm {
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc16Arc => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new(crc_fast::CrcAlgorithm::Crc16Arc)
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc16Usb => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new(crc_fast::CrcAlgorithm::Crc16Usb)
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc32IsoHdlc => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new(crc_fast::CrcAlgorithm::Crc32IsoHdlc)
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc32Iscsi => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new(crc_fast::CrcAlgorithm::Crc32Iscsi)
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc32Bzip2 => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new(crc_fast::CrcAlgorithm::Crc32Bzip2)
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc32Mpeg2 => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new(crc_fast::CrcAlgorithm::Crc32Mpeg2)
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc32Cksum => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new(crc_fast::CrcAlgorithm::Crc32Cksum)
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc64Ecma182 => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new(crc_fast::CrcAlgorithm::Crc64Ecma182)
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc64Nvme => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new(crc_fast::CrcAlgorithm::Crc64Nvme)
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc64Xz => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new(crc_fast::CrcAlgorithm::Crc64Xz)
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc64Westbury => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new(crc_fast::CrcAlgorithm::Crc64We)
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc64GoIso => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new(crc_fast::CrcAlgorithm::Crc64GoIso)
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc64Microsoft => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new(crc_fast::CrcAlgorithm::Crc64Ms)
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc64Redis => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new(crc_fast::CrcAlgorithm::Crc64Redis)
+            },
+
             #[cfg(feature = "hashes-seahash")]
             HashAlgorithm::Seahash => Self::Seahash(Default::default()),
-
-            #[cfg(feature = "hashes-crc32")]
-            HashAlgorithm::Crc32 => Self::Crc32(Default::default()),
-
-            #[cfg(feature = "hashes-crc32c")]
-            HashAlgorithm::Crc32c => Self::Crc32c(Default::default()),
 
             #[cfg(feature = "hashes-siphash")]
             HashAlgorithm::Siphash_1_3_64 => Self::Siphash_1_3_64(Default::default()),
@@ -247,9 +319,6 @@ impl Hasher {
         let algorithm: HashAlgorithm = algorithm.into();
         let seed = seed.as_ref();
 
-        #[cfg(feature = "tracing")]
-        tracing::trace!(?algorithm, ?seed, "create seeded hasher");
-
         fn get_seed<const SIZE: usize>(seed: impl AsRef<[u8]>) -> [u8; SIZE] {
             let mut output = [0; SIZE];
 
@@ -264,6 +333,132 @@ impl Hasher {
         }
 
         match algorithm {
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc16Arc => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new_with_init_state(
+                    crc_fast::CrcAlgorithm::Crc16Arc,
+                    u64::from_le_bytes(get_seed::<8>(seed))
+                )
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc16Usb => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new_with_init_state(
+                    crc_fast::CrcAlgorithm::Crc16Usb,
+                    u64::from_le_bytes(get_seed::<8>(seed))
+                )
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc32IsoHdlc => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new_with_init_state(
+                    crc_fast::CrcAlgorithm::Crc32IsoHdlc,
+                    u64::from_le_bytes(get_seed::<8>(seed))
+                )
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc32Iscsi => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new_with_init_state(
+                    crc_fast::CrcAlgorithm::Crc32Iscsi,
+                    u64::from_le_bytes(get_seed::<8>(seed))
+                )
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc32Bzip2 => Self::Crc {
+                algorithm,
+                hasher:crc_fast::Digest::new_with_init_state(
+                    crc_fast::CrcAlgorithm::Crc32Bzip2,
+                    u64::from_le_bytes(get_seed::<8>(seed))
+                )
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc32Mpeg2 => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new_with_init_state(
+                    crc_fast::CrcAlgorithm::Crc32Mpeg2,
+                    u64::from_le_bytes(get_seed::<8>(seed))
+                )
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc32Cksum => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new_with_init_state(
+                    crc_fast::CrcAlgorithm::Crc32Cksum,
+                    u64::from_le_bytes(get_seed::<8>(seed))
+                )
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc64Ecma182 => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new_with_init_state(
+                    crc_fast::CrcAlgorithm::Crc64Ecma182,
+                    u64::from_le_bytes(get_seed::<8>(seed))
+                )
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc64Nvme => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new_with_init_state(
+                    crc_fast::CrcAlgorithm::Crc64Nvme,
+                    u64::from_le_bytes(get_seed::<8>(seed))
+                )
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc64Xz => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new_with_init_state(
+                    crc_fast::CrcAlgorithm::Crc64Xz,
+                    u64::from_le_bytes(get_seed::<8>(seed))
+                )
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc64Westbury => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new_with_init_state(
+                    crc_fast::CrcAlgorithm::Crc64We,
+                    u64::from_le_bytes(get_seed::<8>(seed))
+                )
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc64GoIso => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new_with_init_state(
+                    crc_fast::CrcAlgorithm::Crc64GoIso,
+                    u64::from_le_bytes(get_seed::<8>(seed))
+                )
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc64Microsoft => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new_with_init_state(
+                    crc_fast::CrcAlgorithm::Crc64Ms,
+                    u64::from_le_bytes(get_seed::<8>(seed))
+                )
+            },
+
+            #[cfg(feature = "hashes-crc")]
+            HashAlgorithm::Crc64Redis => Self::Crc {
+                algorithm,
+                hasher: crc_fast::Digest::new_with_init_state(
+                    crc_fast::CrcAlgorithm::Crc64Redis,
+                    u64::from_le_bytes(get_seed::<8>(seed))
+                )
+            },
+
             #[cfg(feature = "hashes-seahash")]
             HashAlgorithm::Seahash => {
                 let seed = get_seed::<32>(seed);
@@ -286,24 +481,6 @@ impl Hasher {
                 );
 
                 Self::Seahash(hasher)
-            }
-
-            #[cfg(feature = "hashes-crc32")]
-            HashAlgorithm::Crc32 => {
-                let hasher = crc32fast::Hasher::new_with_initial(
-                    u32::from_be_bytes(get_seed(seed))
-                );
-
-                Self::Crc32(hasher)
-            }
-
-            #[cfg(feature = "hashes-crc32c")]
-            HashAlgorithm::Crc32c => {
-                let hasher = crc32c::Crc32cHasher::new(
-                    u32::from_be_bytes(get_seed(seed))
-                );
-
-                Self::Crc32c(hasher)
             }
 
             #[cfg(feature = "hashes-siphash")]
@@ -575,14 +752,11 @@ impl Hasher {
     /// Get hash algorithm from the current hasher.
     pub const fn algorithm(&self) -> HashAlgorithm {
         match self {
+            #[cfg(feature = "hashes-crc")]
+            Self::Crc { algorithm, .. } => *algorithm,
+
             #[cfg(feature = "hashes-seahash")]
             Self::Seahash(_) => HashAlgorithm::Seahash,
-
-            #[cfg(feature = "hashes-crc32")]
-            Self::Crc32(_) => HashAlgorithm::Crc32,
-
-            #[cfg(feature = "hashes-crc32c")]
-            Self::Crc32c(_) => HashAlgorithm::Crc32c,
 
             #[cfg(feature = "hashes-siphash")]
             Self::Siphash_1_3_64(_) => HashAlgorithm::Siphash_1_3_64,
@@ -680,40 +854,44 @@ impl Hasher {
     /// entire buffer while others allow to continue using it. If buffer is not
     /// consumed - the hasher struct will be returned as `Some` in the pair.
     pub fn finalize(self) -> (Box<[u8]>, Option<Self>) {
-        #[cfg(feature = "tracing")]
-        tracing::trace!(algorithm = ?self.algorithm(), "finalize hash");
-
         match self {
+            #[cfg(feature = "hashes-crc")]
+            Self::Crc { algorithm, hasher } => {
+                match algorithm {
+                    // Truncate output to first 2 meaningful bytes.
+                    HashAlgorithm::Crc16Arc |
+                    HashAlgorithm::Crc16Usb => {
+                        (Box::new((hasher.finalize() as u16).to_le_bytes()), Some(self))
+                    }
+
+                    // Truncate output to first 4 meaningful bytes.
+                    HashAlgorithm::Crc32IsoHdlc |
+                    HashAlgorithm::Crc32Iscsi |
+                    HashAlgorithm::Crc32Bzip2 |
+                    HashAlgorithm::Crc32Mpeg2 |
+                    HashAlgorithm::Crc32Cksum => {
+                        (Box::new((hasher.finalize() as u32).to_le_bytes()), Some(self))
+                    }
+
+                    // Don't truncate the output.
+                    _ => (Box::new(hasher.finalize().to_le_bytes()), Some(self))
+                }
+            }
+
             #[cfg(feature = "hashes-seahash")]
             Self::Seahash(hasher) => {
                 use std::hash::Hasher;
 
-                let hash = Box::new(hasher.finish().to_be_bytes());
+                let hash = Box::new(hasher.finish().to_le_bytes());
 
                 (hash, Some(Self::Seahash(hasher)))
-            }
-
-            #[cfg(feature = "hashes-crc32")]
-            Self::Crc32(hasher) => {
-                (Box::new(hasher.finalize().to_be_bytes()), None)
-            }
-
-            // The actual output is u32, but hasher API forced devs to return u64.
-            // We don't strip any meaningful hash bits here.
-            #[cfg(feature = "hashes-crc32c")]
-            Self::Crc32c(hasher) => {
-                use std::hash::Hasher;
-
-                let hash = Box::new((hasher.finish() as u32).to_be_bytes());
-
-                (hash, Some(Self::Crc32c(hasher)))
             }
 
             #[cfg(feature = "hashes-siphash")]
             Self::Siphash_1_3_64(hasher) => {
                 use std::hash::Hasher;
 
-                let hash = Box::new(hasher.finish().to_be_bytes());
+                let hash = Box::new(hasher.finish().to_le_bytes());
 
                 (hash, Some(Self::Siphash_1_3_64(hasher)))
             }
@@ -724,16 +902,16 @@ impl Hasher {
 
                 let hash = Box::new(hasher.finish128().as_bytes());
 
-                (hash, Some(Self::Siphash_1_3_128(hasher)))
+                (hash, Some(self))
             }
 
             #[cfg(feature = "hashes-siphash")]
             Self::Siphash_2_4_64(hasher) => {
                 use std::hash::Hasher;
 
-                let hash = Box::new(hasher.finish().to_be_bytes());
+                let hash = Box::new(hasher.finish().to_le_bytes());
 
-                (hash, Some(Self::Siphash_2_4_64(hasher)))
+                (hash, Some(self))
             }
 
             #[cfg(feature = "hashes-siphash")]
@@ -742,12 +920,12 @@ impl Hasher {
 
                 let hash = Box::new(hasher.finish128().as_bytes());
 
-                (hash, Some(Self::Siphash_2_4_128(hasher)))
+                (hash, Some(self))
             }
 
             #[cfg(feature = "hashes-xxh")]
             Self::Xxh_32(hasher) => {
-                let hash = Box::new(hasher.digest().to_be_bytes());
+                let hash = Box::new(hasher.digest().to_le_bytes());
 
                 (hash, Some(Self::Xxh_32(hasher)))
             }
@@ -756,21 +934,21 @@ impl Hasher {
             Self::Xxh_64(hasher) => {
                 use std::hash::Hasher;
 
-                let hash = Box::new(hasher.finish().to_be_bytes());
+                let hash = Box::new(hasher.finish().to_le_bytes());
 
                 (hash, Some(Self::Xxh_64(hasher)))
             }
 
             #[cfg(feature = "hashes-xxh")]
             Self::Xxh3_64(hasher) => {
-                let hash = Box::new(hasher.digest().to_be_bytes());
+                let hash = Box::new(hasher.digest().to_le_bytes());
 
                 (hash, Some(Self::Xxh3_64(hasher)))
             }
 
             #[cfg(feature = "hashes-xxh")]
             Self::Xxh3_128(hasher) => {
-                let hash = Box::new(hasher.digest128().to_be_bytes());
+                let hash = Box::new(hasher.digest128().to_le_bytes());
 
                 (hash, Some(Self::Xxh3_128(hasher)))
             }
@@ -1022,19 +1200,15 @@ impl Hasher {
 impl std::fmt::Debug for Hasher {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            #[cfg(feature = "hashes-seahash")]
-            Self::Seahash(_) => f.debug_struct("Hasher")
-                .field("inner", &"Seahash" as &dyn std::fmt::Debug)
-                .finish(),
-
-            #[cfg(feature = "hashes-crc32")]
-            Self::Crc32(hasher) => f.debug_struct("Hasher")
+            #[cfg(feature = "hashes-crc")]
+            Self::Crc { algorithm, hasher } => f.debug_struct("Hasher")
+                .field("algorithm", &algorithm.name())
                 .field("inner", hasher)
                 .finish(),
 
-            #[cfg(feature = "hashes-crc32c")]
-            Self::Crc32c(_) => f.debug_struct("Hasher")
-                .field("inner", &"Crc32c" as &dyn std::fmt::Debug)
+            #[cfg(feature = "hashes-seahash")]
+            Self::Seahash(_) => f.debug_struct("Hasher")
+                .field("inner", &"Seahash" as &dyn std::fmt::Debug)
                 .finish(),
 
             #[cfg(feature = "hashes-siphash")]
@@ -1200,24 +1374,15 @@ impl std::fmt::Display for Hasher {
 impl Write for Hasher {
     fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
         match self {
-            #[cfg(feature = "hashes-seahash")]
-            Self::Seahash(hasher) => {
-                use std::hash::Hasher;
-
-                hasher.write(buf);
-
-                Ok(buf.len())
-            }
-
-            #[cfg(feature = "hashes-crc32")]
-            Self::Crc32(hasher) => {
+            #[cfg(feature = "hashes-crc")]
+            Self::Crc { hasher, .. } => {
                 hasher.update(buf);
 
                 Ok(buf.len())
             }
 
-            #[cfg(feature = "hashes-crc32c")]
-            Self::Crc32c(hasher) => {
+            #[cfg(feature = "hashes-seahash")]
+            Self::Seahash(hasher) => {
                 use std::hash::Hasher;
 
                 hasher.write(buf);

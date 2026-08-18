@@ -24,8 +24,7 @@ dependencies = [
  "blake2",
  "blake3",
  "bzip2",
- "crc32c",
- "crc32fast",
+ "crc-fast",
  "flate2",
  "lazy_static",
  "lz4_flex",
@@ -987,12 +986,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "crc32c"
-version = "0.6.8"
+name = "crc-fast"
+version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3a47af21622d091a8f0fb295b88bc886ac74efcc613efc19f5d0b21de5c89e47"
+checksum = "e75b2483e97a5a7da73ac68a05b629f9c53cff58d8ed1c77866079e18b00dba5"
 dependencies = [
- "rustc_version",
+ "digest 0.10.7",
+ "spin 0.10.1",
 ]
 
 [[package]]
@@ -1333,7 +1333,7 @@ dependencies = [
  "fastrand",
  "futures-core",
  "futures-sink",
- "spin",
+ "spin 0.9.8",
 ]
 
 [[package]]
@@ -4546,6 +4546,12 @@ checksum = "6980e8d7511241f8acf4aebddbb1ff938df5eebe98691418c4468d0b72a96a67"
 dependencies = [
  "lock_api",
 ]
+
+[[package]]
+name = "spin"
+version = "0.10.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "023a211cb3138dbc438680b32560ad89f699977624c9f8dbb95a47d5b4c07dd3"
 
 [[package]]
 name = "spinning_top"

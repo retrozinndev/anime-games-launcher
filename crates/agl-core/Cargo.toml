@@ -34,9 +34,8 @@ archives-7z = ["archives"]
 hashes = []
 hashes-all = [
     "hashes",
+    "hashes-crc",
     "hashes-seahash",
-    "hashes-crc32",
-    "hashes-crc32c",
     "hashes-siphash",
     "hashes-xxh",
     "hashes-md5",
@@ -46,9 +45,8 @@ hashes-all = [
     "hashes-blake2",
     "hashes-blake3"
 ]
+hashes-crc = ["hashes", "dep:crc-fast"]
 hashes-seahash = ["hashes", "dep:seahash"]
-hashes-crc32 = ["hashes", "dep:crc32fast"]
-hashes-crc32c = ["hashes", "dep:crc32c"]
 hashes-siphash = ["hashes", "dep:siphasher"]
 hashes-xxh = ["hashes", "dep:xxhash-rust"]
 hashes-md5 = ["hashes", "dep:md-5"]
@@ -111,9 +109,8 @@ lazy_static = "1.5"
 tracing = { version = "0.1", optional = true }
 
 # Hashes
+crc-fast = { version = "1.10", optional = true }
 seahash = { version = "4.1", optional = true }
-crc32fast = { version = "1.5", optional = true }
-crc32c = { version = "0.6", optional = true }
 siphasher = { version = "1.0", optional = true }
 xxhash-rust = { version = "0.8", features = ["xxh32", "xxh64", "xxh3"], optional = true }
 md-5 = { version = "0.11", optional = true }
